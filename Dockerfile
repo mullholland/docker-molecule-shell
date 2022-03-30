@@ -39,7 +39,7 @@ RUN set -eux \
     && ansible-lint --version \
     && yamllint --version \
     && echo "###################################" \
-    && python3 -m venv "${VENVBASE}/current" \
+    && source "${VENVBASE}/current/bin/activate" \
     && ansible --version \
     && ansible-lint --version \
     && yamllint --version \
