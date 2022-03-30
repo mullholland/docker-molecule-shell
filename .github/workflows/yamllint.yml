@@ -16,7 +16,7 @@ env:
 
 
 jobs:
-  build-test:
+  test:
     name: "build-test"
     runs-on: ubuntu-latest
     steps:
@@ -46,43 +46,25 @@ jobs:
       - name: Verify git in the built image.
         run: docker run --name test-container --rm ${{ env.TEST_TAG }} git --version
 
-  build-release:
-    name: "build-release"
-    needs:
-      - build-test
+  # If on master branch, build and release image.
+  release:
+    name: Release
     runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+
     steps:
       - uses: actions/checkout@v2
-
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          # list of Docker images to use as base name for tags
-          images: |
-            ${{ github.repository }}
-            ghcr.io/${{ github.repository }}
-          # generate Docker tags based on the following events/attributes
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
-
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
 
       - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to GitHub Container Registry
-        if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -92,9 +74,10 @@ jobs:
       - name: Build and push image.
         uses: docker/build-push-action@v2
         with:
-          context: .
+          context: ./
           file: Dockerfile
           platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+          tags: |
+            ${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:latest
