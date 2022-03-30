@@ -29,7 +29,7 @@ RUN set -eux \
     && pip3 install --no-cache-dir --no-compile -r /opt/requirements.current.txt \
     # Ansible next (2.1X) - latest/greatest
     && python3 -m venv "${VENVBASE}/next" \
-    && source "${VENVBASE}/latest/bin/activate" \
+    && source "${VENVBASE}/next/bin/activate" \
     && python -m pip install --upgrade pip \
     && pip3 install --no-cache-dir --no-compile -r /opt/requirements.next.txt \
     # SmokeTests
@@ -44,7 +44,7 @@ RUN set -eux \
     && ansible-lint --version \
     && yamllint --version \
     && echo "###################################" \
-    && source "${VENVBASE}/latest/bin/activate" \
+    && source "${VENVBASE}/next/bin/activate" \
     && ansible --version \
     && ansible-lint --version \
     && yamllint --version \
