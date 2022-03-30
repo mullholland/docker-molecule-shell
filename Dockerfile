@@ -28,7 +28,7 @@ RUN set -eux \
     && python -m pip install --upgrade pip \
     && pip3 install --no-cache-dir --no-compile -r /opt/requirements.current.txt \
     # Ansible next (2.1X) - latest/greatest
-    && python3 -m venv "${VENVBASE}/latest" \
+    && python3 -m venv "${VENVBASE}/next" \
     && source "${VENVBASE}/latest/bin/activate" \
     && python -m pip install --upgrade pip \
     && pip3 install --no-cache-dir --no-compile -r /opt/requirements.next.txt \
