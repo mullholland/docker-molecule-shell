@@ -14,6 +14,5 @@ function retry {
   return 0
 }
 
-cd /workspace
 source "${VENVBASE}/${ansible:-current}/bin/activate"
 PY_COLORS=1 ANSIBLE_FORCE_COLOR=1 retry molecule ${command:-test} --scenario-name ${scenario:-default}

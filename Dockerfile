@@ -2,7 +2,7 @@ FROM fedora:35
 
 ARG VENVBASE="/opt/molecule"
 
-WORKDIR /github/workspace
+WORKDIR /workspace
 
 COPY files/ /opt
 
