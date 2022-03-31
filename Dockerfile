@@ -50,6 +50,6 @@ RUN set -eux \
     && yamllint --version \
     && echo "###################################" \
     && find /usr/lib/ -name '__pycache__' -print0 | xargs -0 -n1 rm -rf \
-    && find /usr/lib/ -name '*.pyc' -print0 | xargs -0 -n1 rm -rf \
+    && find /usr/lib/ -name '*.pyc' -print0 | xargs -0 -n1 rm -rf
 
 CMD /opt/molecule.sh
