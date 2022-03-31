@@ -2,18 +2,12 @@
 name: Build, Test and Release Container
 
 on:
+  pull_request:
   push:
     branches:
-      - '**'
-    tags:
-      - 'v*.*.*'
-  pull_request:
-    branches:
-      - 'master'
-
-env:
-  TEST_TAG: test-docker-molecule-shell:test-tag
-
+      - main
+  schedule:
+    - cron: "10 2 * * 0"
 
 jobs:
   test:
@@ -23,28 +17,28 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Test building image.
-        run: docker build -t ${{ env.TEST_TAG }} .
+        run: docker build -t test-container .
 
       - name: Verify Ansible Installation - Previous - yamllint in the built image.
-        run: docker run --name test-container --rm ${{ env.TEST_TAG }} /opt/molecule/previous/bin/yamllint --version
+        run: docker run --name test-container --rm test-container /opt/molecule/previous/bin/yamllint --version
 
       - name: Verify Ansible Installation - Previous - ansible in the built image.
-        run: docker run --name test-container --rm ${{ env.TEST_TAG }} /opt/molecule/previous/bin/ansible --version
+        run: docker run --name test-container --rm test-container /opt/molecule/previous/bin/ansible --version
 
       - name: Verify Ansible Installation - Current - yamllint in the built image.
-        run: docker run --name test-container --rm ${{ env.TEST_TAG }} /opt/molecule/current/bin/yamllint --version
+        run: docker run --name test-container --rm test-container /opt/molecule/current/bin/yamllint --version
 
       - name: Verify Ansible Installation - Current - ansible in the built image.
-        run: docker run --name test-container --rm ${{ env.TEST_TAG }} /opt/molecule/current/bin/ansible --version
+        run: docker run --name test-container --rm test-container /opt/molecule/current/bin/ansible --version
 
       - name: Verify Ansible Installation - Next - yamllint in the built image.
-        run: docker run --name test-container --rm ${{ env.TEST_TAG }} /opt/molecule/next/bin/yamllint --version
+        run: docker run --name test-container --rm test-container /opt/molecule/next/bin/yamllint --version
 
       - name: Verify Ansible Installation - Next - ansible in the built image.
-        run: docker run --name test-container --rm ${{ env.TEST_TAG }} /opt/molecule/next/bin/ansible --version
+        run: docker run --name test-container --rm test-container /opt/molecule/next/bin/ansible --version
 
       - name: Verify git in the built image.
-        run: docker run --name test-container --rm ${{ env.TEST_TAG }} git --version
+        run: docker run --name test-container --rm test-container git --version
 
   # If on master branch, build and release image.
   release:

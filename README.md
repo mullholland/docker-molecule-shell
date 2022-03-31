@@ -17,7 +17,10 @@ The OS you want to run on. Default `"fedora"`.
 ### `ansible`
 
 The Ansible version of the container image to use. Default `"2.12"`.
-Possible choices are: "2.10", "2.11", "2.12"
+Possible choices are: "previous", "current", "next"
+    previous => Ansible 2.11
+    current  => Ansible 2.12
+    next     => Ansible latest package available
 
 ### `scenario`
 
