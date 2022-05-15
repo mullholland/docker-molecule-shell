@@ -1,0 +1,8 @@
+---
+roles: []
+collections:
+  - name: community.docker
+    version: ">=1.9.1"
+
+
+
