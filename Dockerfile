@@ -22,16 +22,19 @@ RUN set -eux \
     && source "${VENVBASE}/previous/bin/activate" \
     && python -m pip install --upgrade pip \
     && pip3 install --no-cache-dir --no-compile -r /opt/requirements.previous.txt \
+    && ansible-galaxy install -r /opt/requirements.previous.yml \
     # Ansible current (2.12)
     && python3 -m venv "${VENVBASE}/current" \
     && source "${VENVBASE}/current/bin/activate" \
     && python -m pip install --upgrade pip \
     && pip3 install --no-cache-dir --no-compile -r /opt/requirements.current.txt \
+    && ansible-galaxy install -r /opt/requirements.current.yml \
     # Ansible next (2.1X) - latest/greatest
     && python3 -m venv "${VENVBASE}/next" \
     && source "${VENVBASE}/next/bin/activate" \
     && python -m pip install --upgrade pip \
     && pip3 install --no-cache-dir --no-compile -r /opt/requirements.next.txt \
+    && ansible-galaxy install -r /opt/requirements.next.yml \
     # SmokeTests
     && echo "###################################" \
     && source "${VENVBASE}/previous/bin/activate" \
