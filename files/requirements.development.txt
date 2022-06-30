@@ -1,7 +1,7 @@
 ###### Ansible Version requirements ######
 https://github.com/ansible/ansible/archive/devel.tar.gz
 # ansible-core
-ansible
+# ansible>=6.0
 
 # Linting
 yamllint
