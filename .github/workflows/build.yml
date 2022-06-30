@@ -37,18 +37,16 @@ jobs:
           context: ./
           file: Dockerfile
           platforms: linux/amd64
-          tags: |
-            ${{ github.repository }}:${{ github.sha }}
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+          tags: test-container
 
       - name: Verify Ansible Installation - Previous - ansible in the built image.
-        run: docker run --name test-container --rm ghcr.io/${{ github.repository }}:${{ github.sha }} /opt/molecule/previous/bin/ansible --version
+        run: docker run --name test-container --rm test-container /opt/molecule/previous/bin/ansible --version
 
       - name: Verify Ansible Installation - Current - ansible in the built image.
-        run: docker run --name test-container --rm ghcr.io/${{ github.repository }}:${{ github.sha }} /opt/molecule/current/bin/ansible --version
+        run: docker run --name test-container --rm test-container /opt/molecule/current/bin/ansible --version
 
       - name: Verify Ansible Installation - Next - ansible in the built image.
-        run: docker run --name test-container --rm ghcr.io/${{ github.repository }}:${{ github.sha }} /opt/molecule/development/bin/ansible --version
+        run: docker run --name test-container --rm test-container /opt/molecule/development/bin/ansible --version
 
   docker-build:
     runs-on: ubuntu-latest
@@ -74,7 +72,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull current image.
-        run: docker pull ghcr.io/${{ github.repository }}:${{ github.sha }}
+        run: docker pull test-container
 
       - name: Retag and push image.
         uses: docker/build-push-action@v3
