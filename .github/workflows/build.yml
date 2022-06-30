@@ -10,42 +10,8 @@ on:
     - cron: "10 2 * * 0"
 
 jobs:
-  test:
-    name: "build-test"
+  docker-test:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Test building image.
-        run: docker build -t test-container .
-
-      - name: Verify Ansible Installation - Previous - yamllint in the built image.
-        run: docker run --name test-container --rm test-container /opt/molecule/previous/bin/yamllint --version
-
-      - name: Verify Ansible Installation - Previous - ansible in the built image.
-        run: docker run --name test-container --rm test-container /opt/molecule/previous/bin/ansible --version
-
-      - name: Verify Ansible Installation - Current - yamllint in the built image.
-        run: docker run --name test-container --rm test-container /opt/molecule/current/bin/yamllint --version
-
-      - name: Verify Ansible Installation - Current - ansible in the built image.
-        run: docker run --name test-container --rm test-container /opt/molecule/current/bin/ansible --version
-
-      - name: Verify Ansible Installation - Next - yamllint in the built image.
-        run: docker run --name test-container --rm test-container /opt/molecule/next/bin/yamllint --version
-
-      - name: Verify Ansible Installation - Next - ansible in the built image.
-        run: docker run --name test-container --rm test-container /opt/molecule/next/bin/ansible --version
-
-      - name: Verify git in the built image.
-        run: docker run --name test-container --rm test-container git --version
-
-  # If on master branch, build and release image.
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v3
@@ -71,7 +37,53 @@ jobs:
           context: ./
           file: Dockerfile
           platforms: linux/amd64
+          tags: |
+            ${{ github.repository }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+      - name: Verify Ansible Installation - Previous - ansible in the built image.
+        run: docker run --name test-container --rm ghcr.io/${{ github.repository }}:${{ github.sha }} /opt/molecule/previous/bin/ansible --version
+
+      - name: Verify Ansible Installation - Current - ansible in the built image.
+        run: docker run --name test-container --rm ghcr.io/${{ github.repository }}:${{ github.sha }} /opt/molecule/current/bin/ansible --version
+
+      - name: Verify Ansible Installation - Next - ansible in the built image.
+        run: docker run --name test-container --rm ghcr.io/${{ github.repository }}:${{ github.sha }} /opt/molecule/development/bin/ansible --version
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: docker-test
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/setup-qemu-action@v2
+      - uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull current image.
+        run: docker pull ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+      - name: Retag and push image.
+        uses: docker/build-push-action@v3
+        with:
+          context: ./
+          file: Dockerfile
+          platforms: linux/amd64
           push: true
+          pull: true
           tags: |
             ${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:latest
