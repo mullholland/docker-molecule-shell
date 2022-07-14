@@ -62,6 +62,7 @@ RUN apt-get update \
     libssl-dev \
     jq \
     vim \
+    wget \
     && apt-get clean
 
 # install docker
@@ -79,19 +80,22 @@ RUN set -eux \
     && source "${VENVBASE}/previous/bin/activate" \
     && python -m pip install --upgrade pip \
     && pip3 install --no-cache-dir --no-compile -r /opt/requirements.previous.txt \
-    && ansible-galaxy install -r /opt/requirements.previous.yml \
+    && ansible-galaxy collection install -r /opt/requirements.previous.yml \
     # Current Ansible Version (ATM = 2.13)
     && python3 -m venv "${VENVBASE}/current" \
     && source "${VENVBASE}/current/bin/activate" \
     && python -m pip install --upgrade pip \
     && pip3 install --no-cache-dir --no-compile -r /opt/requirements.current.txt \
-    && ansible-galaxy install -r /opt/requirements.current.yml \
+    && ansible-galaxy collection install -r /opt/requirements.current.yml \
     # Development Ansible Version
     && python3 -m venv "${VENVBASE}/development" \
     && source "${VENVBASE}/development/bin/activate" \
     && python -m pip install --upgrade pip \
     && pip3 install --no-cache-dir --no-compile -r /opt/requirements.development.txt \
-    && ansible-galaxy install -r /opt/requirements.development.yml \
+    && ansible-galaxy collection install -r /opt/requirements.development.yml \
+    && wget -O /opt/ansible.collections.in https://raw.githubusercontent.com/ansible-community/ansible-build-data/main/7/ansible.in \
+    && /opt/development_collections.sh /opt/ansible.collections.in /opt/ansible.collections.yml \
+    && ansible-galaxy collection install -r /opt/ansible.collections.yml -vv \
     # SmokeTest
     # Previous Ansible Version (ATM = 2.12)
     && source "${VENVBASE}/previous/bin/activate" \

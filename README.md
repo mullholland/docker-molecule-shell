@@ -2,73 +2,67 @@
 
 A Shell Container to tests your [Ansible](https://www.ansible.com/) role using [Molecule](https://molecule.readthedocs.io/en/stable/).
 
-## Requirements
+# Usage
 
-This action can work with Molecule scenarios that use the [`docker`](https://molecule.readthedocs.io/en/latest/configuration.html#docker) driver.
+## Build the container
+Clone the repository and build the container (needs docker isntalled)
+```
+git clone git@github.com:mullholland/docker-molecule-shell.git
+cd docker-molecule-shell/
+docker build -t docker-molecule-shell:local -f Dockerfile .
+```
 
-This action expects the default Ansible role structure:
+## Pull the container
+```
+docker pull ghcr.io/mullholland/docker-molecule-shell:latest
+```
 
-## Inputs
+# Test ansible roles inside the container
+Start the container
+```
+docker run -
 
-### `platform`
+docker exec docker-molecule-shell -it /bin/bash
+```
+# Test Roles from the outside
 
-The OS you want to run on. Default `"fedora"`.
+## Variables
 
 ### `ansible`
-
-The Ansible version of the container image to use. Default `"2.12"`.
-Possible choices are: "previous", "current", "next"
-    previous => Ansible 2.11
-    current  => Ansible 2.12
-    next     => Ansible latest package available
-
 ### `scenario`
-
-The molecule scenario to run. Default `"default"`
-
 ### `command`
-
-The molecule command to use. For example `lint`. Default `"test"`.
-
 ## Example usage
 
-
-### local testing
-
--   Build Image
-    ```BASH
-    docker build -t docker-molecule-shell:local -f Dockerfile .
-    ```
--   Go to a role-directory
--   Try linting
-    ```BASH
-    docker run --privileged \
-               --volume $(pwd):/workspace/:z \
-               --volume /var/run/docker.sock:/var/run/docker.sock:z \
-               --tty \
-               --interactive \
-               --env command="lint" \
-               docker-molecule-shell:local
-    ```
--   Try testing (default scenario, default image)
-    ```BASH
-    docker run --privileged \
-               --volume $(pwd):/workspace/:z \
-               --volume /var/run/docker.sock:/var/run/docker.sock:z \
-               --tty \
-               --interactive \
-               --env ansible="current" \
-               docker-molecule-shell:local
-    ```
--   Try testing (alterantive scenario, image ubuntu2004)
-    ```BASH
-    docker run --privileged \
-               --volume $(pwd):/workspace/:z \
-               --volume /var/run/docker.sock:/var/run/docker.sock:z \
-               --tty \
-               --interactive \
-               --env ansible="current" \
-               --env scenario="alternative" \
-               --env platform="ubuntu2004" \
-               docker-molecule-shell:local
-    ```
+### linting
+Go to a role-directory
+```BASH
+docker run --privileged \
+        --volume $(pwd):/workspace/:z \
+        --volume /var/run/docker.sock:/var/run/docker.sock:z \
+        --tty \
+        --interactive \
+        --env command="lint" \
+        docker-molecule-shell:local
+```
+### Try testing (default scenario, default image)
+```BASH
+docker run --privileged \
+        --volume $(pwd):/workspace/:z \
+        --volume /var/run/docker.sock:/var/run/docker.sock:z \
+        --tty \
+        --interactive \
+        --env ansible="current" \
+        docker-molecule-shell:local
+```
+### Try testing (alterantive scenario, image ubuntu2004)
+```BASH
+docker run --privileged \
+        --volume $(pwd):/workspace/:z \
+        --volume /var/run/docker.sock:/var/run/docker.sock:z \
+        --tty \
+        --interactive \
+        --env ansible="current" \
+        --env scenario="alternative" \
+        --env platform="ubuntu2004" \
+        docker-molecule-shell:local
+```
