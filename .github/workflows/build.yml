@@ -31,7 +31,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Verify Ansible Installation - Previous - ansible in the built image.
+      - name: Build image.
         run: docker build -t test-container:local -f Dockerfile .
 
       - name: Verify Ansible Installation - Previous - ansible in the built image.
@@ -40,7 +40,7 @@ jobs:
       - name: Verify Ansible Installation - Current - ansible in the built image.
         run: docker run --name test-container --rm test-container:local /opt/molecule/current/bin/ansible --version
 
-      - name: Verify Ansible Installation - Next - ansible in the built image.
+      - name: Verify Ansible Installation - Development - ansible in the built image.
         run: docker run --name test-container --rm test-container:local /opt/molecule/development/bin/ansible --version
 
   docker-build:
