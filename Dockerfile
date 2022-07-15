@@ -1,7 +1,7 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 LABEL maintainer="mullholland"
-LABEL build_update="2022-06-19"
+LABEL build_update="2022-07-15"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG VENVBASE="/opt/molecule"
@@ -56,7 +56,6 @@ RUN apt-get update \
     software-properties-common \
     rsyslog \
     iproute2 \
-    python-dev \
     libsasl2-dev \
     libldap2-dev \
     libssl-dev \
