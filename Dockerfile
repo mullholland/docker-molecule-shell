@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 AS builder
+FROM ubuntu:20.04
 
 LABEL maintainer="mullholland"
 LABEL build_update="2022-06-19"
@@ -75,7 +75,7 @@ RUN curl -fsSL https://get.docker.com -o get-docker.sh \
 COPY files/ /opt/
 
 RUN set -eux \
-    # Previous Ansible Version (ATM = 2.11)
+    # Previous Ansible Version (ATM = 2.12)
     && python3 -m venv "${VENVBASE}/previous" \
     && source "${VENVBASE}/previous/bin/activate" \
     && python -m pip install --upgrade pip \
@@ -87,15 +87,6 @@ RUN set -eux \
     && python -m pip install --upgrade pip \
     && pip3 install --no-cache-dir --no-compile -r /opt/requirements.current.txt \
     && ansible-galaxy collection install -r /opt/requirements.current.yml \
-    # Development Ansible Version
-    && python3 -m venv "${VENVBASE}/development" \
-    && source "${VENVBASE}/development/bin/activate" \
-    && python -m pip install --upgrade pip \
-    && pip3 install --no-cache-dir --no-compile -r /opt/requirements.development.txt \
-    && ansible-galaxy collection install -r /opt/requirements.development.yml \
-    && wget -O /opt/ansible.collections.in https://raw.githubusercontent.com/ansible-community/ansible-build-data/main/7/ansible.in \
-    && /opt/development_collections.sh /opt/ansible.collections.in /opt/ansible.collections.yml \
-    && ansible-galaxy collection install -r /opt/ansible.collections.yml -vv \
     # SmokeTest
     # Previous Ansible Version (ATM = 2.12)
     && source "${VENVBASE}/previous/bin/activate" \
@@ -108,15 +99,7 @@ RUN set -eux \
     && pipdeptree \
     && ansible --version \
     && ansible-lint --version \
-    && yamllint --version \
-    # Development Ansible Version
-    && source "${VENVBASE}/development/bin/activate" \
-    && pipdeptree \
-    && ansible --version \
-    && ansible-lint --version \
-    && yamllint --version \
-    && find /usr/lib/ -name '__pycache__' -print0 | xargs -0 -n1 rm -rf \
-    && find /usr/lib/ -name '*.pyc' -print0 | xargs -0 -n1 rm -rf
+    && yamllint --version
 
 # Update scripts
 RUN mv /opt/.bashrc /root/.bashrc \
