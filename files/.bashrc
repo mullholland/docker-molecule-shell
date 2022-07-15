@@ -129,8 +129,6 @@ echo '
 source /opt/molecule/previous/bin/activate
 # Ansible -> current
 source /opt/molecule/current/bin/activate
-# Ansible -> development
-source /opt/molecule/development/bin/activate
 # Testing like github workflow
 scenario=${SCENARIO} ansible=${ANSIBLE} platform=${PLATFORM} /opt/molecule.sh
 # example

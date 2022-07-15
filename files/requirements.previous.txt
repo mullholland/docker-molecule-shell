@@ -4,8 +4,8 @@ ansible>=5.0,<6.0
 
 # Linting
 yamllint
-# ansible-lint >6 requires ansible-core>=2.12
-ansible-lint<6
+# ansible-lint requires ansible-core>=2.12
+ansible-lint
 # Molecule
 molecule[docker,ansible,lint]
 # other

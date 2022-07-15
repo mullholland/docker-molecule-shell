@@ -40,9 +40,6 @@ jobs:
       - name: Verify Ansible Installation - Current - ansible in the built image.
         run: docker run --name test-container --rm test-container:local /opt/molecule/current/bin/ansible --version
 
-      - name: Verify Ansible Installation - Development - ansible in the built image.
-        run: docker run --name test-container --rm test-container:local /opt/molecule/development/bin/ansible --version
-
   docker-build:
     runs-on: ubuntu-latest
     needs: docker-test
